@@ -222,6 +222,9 @@
             form.style.display = form.style.display === "block" ? "none" : "block";
         }
 
+        // Lista de produtos em memória (não usando localStorage)
+        const products = [];
+
         // Função para adicionar um novo produto diretamente no site
         function addProduct() {
             const productName = document.getElementById("productName").value;
@@ -247,7 +250,10 @@
                     image: reader.result // URL da imagem
                 };
 
-                // Adiciona o produto diretamente ao site
+                // Adiciona o produto à lista de produtos em memória
+                products.push(newProduct);
+
+                // Adiciona o produto diretamente no site
                 const siteProductsContainer = document.getElementById("siteProducts");
 
                 const productDiv = document.createElement("div");
@@ -264,29 +270,3 @@
                 document.getElementById("productName").value = "";
                 document.getElementById("productPrice").value = "";
                 document.getElementById("productColor").value = "#000000"; // Cor padrão
-                document.getElementById("productImage").value = "";
-            };
-
-            if (productImage) {
-                reader.readAsDataURL(productImage); // Lê a imagem como URL
-            }
-        }
-
-        // Função para filtrar produtos por categoria
-        function filterProducts(category) {
-            const siteProductsContainer = document.getElementById("siteProducts");
-            const siteProducts = document.querySelectorAll(".site-product");
-
-            siteProducts.forEach(product => {
-                const productCategory = product.querySelector("p:last-child").innerText.replace('Categoria: ', '');
-                if (category === "Todos" || productCategory === category) {
-                    product.style.display = "block";
-                } else {
-                    product.style.display = "none";
-                }
-            });
-        }
-    </script>
-
-</body>
-</html>
