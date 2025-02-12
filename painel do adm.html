@@ -270,3 +270,37 @@
                 document.getElementById("productName").value = "";
                 document.getElementById("productPrice").value = "";
                 document.getElementById("productColor").value = "#000000"; // Cor padrão
+                document.getElementById("productImage").value = "";
+            };
+
+            if (productImage) {
+                reader.readAsDataURL(productImage); // Lê a imagem como URL
+            }
+        }
+
+        // Função para filtrar produtos por categoria
+        function filterProducts(category) {
+            const siteProductsContainer = document.getElementById("siteProducts");
+
+            siteProductsContainer.innerHTML = ""; // Limpa a exibição dos produtos no site
+
+            const filteredProducts = category === 'Todos' 
+                ? products 
+                : products.filter(product => product.category === category);
+
+            filteredProducts.forEach(product => {
+                const productDiv = document.createElement("div");
+                productDiv.classList.add("site-product");
+                productDiv.innerHTML = `
+                    <h4>${product.name}</h4>
+                    <p>Preço: R$ ${product.price}</p>
+                    ${product.image ? `<img src="${product.image}" alt="${product.name}" />` : ""}
+                    <p>Categoria: ${product.category}</p>
+                `;
+                siteProductsContainer.appendChild(productDiv);
+            });
+        }
+    </script>
+
+</body>
+</html>
