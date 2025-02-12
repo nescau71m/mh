@@ -177,10 +177,10 @@
                 <input type="color" id="productColor">
                 <label for="productCategory">Categoria</label>
                 <select id="productCategory">
-                    <option value="Perfume">perfumes</option>
+                    <option value="Perfume">Perfumes</option>
                     <option value="Fone de Ouvido">Fones de Ouvido</option>
-                    <option value="cremes">cremes</option>
-                    <option value="sabonete">sabonete</option>
+                    <option value="cremes">Cremes</option>
+                    <option value="sabonete">Sabonete</option>
                 </select>
                 <label for="productImage">Imagem do Produto</label>
                 <input type="file" id="productImage">
@@ -193,10 +193,11 @@
 
         <!-- Barra de Categorias -->
         <div class="category-bar">
+            <button onclick="filterProducts('Todos')">Todos</button>
             <button onclick="filterProducts('Perfume')">Perfume</button>
             <button onclick="filterProducts('Fone de Ouvido')">Fone de Ouvido</button>
-            <button onclick="filterProducts('sabonete')">sabonete</button>
-            <button onclick="filterProducts('cremes')">cremes</button>
+            <button onclick="filterProducts('sabonete')">Sabonete</button>
+            <button onclick="filterProducts('cremes')">Cremes</button>
         </div>
 
         <!-- Área de Produtos no Site -->
@@ -221,7 +222,7 @@
             form.style.display = form.style.display === "block" ? "none" : "block";
         }
 
-        // Função para adicionar um novo produto
+        // Função para adicionar um novo produto diretamente no site
         function addProduct() {
             const productName = document.getElementById("productName").value;
             const productPrice = document.getElementById("productPrice").value;
@@ -234,7 +235,6 @@
                 return;
             }
 
-            const productList = JSON.parse(localStorage.getItem("productList")) || [];
             const reader = new FileReader();
 
             // Se uma imagem for carregada, convertemos ela para uma URL para exibir depois
@@ -246,13 +246,19 @@
                     category: productCategory,
                     image: reader.result // URL da imagem
                 };
-                productList.push(newProduct);
 
-                // Salva a lista de produtos no localStorage
-                localStorage.setItem("productList", JSON.stringify(productList));
+                // Adiciona o produto diretamente ao site
+                const siteProductsContainer = document.getElementById("siteProducts");
 
-                // Exibe a lista atualizada de produtos
-                displayProducts();
+                const productDiv = document.createElement("div");
+                productDiv.classList.add("site-product");
+                productDiv.innerHTML = `
+                    <h4>${newProduct.name}</h4>
+                    <p>Preço: R$ ${newProduct.price}</p>
+                    ${newProduct.image ? `<img src="${newProduct.image}" alt="${newProduct.name}" />` : ""}
+                    <p>Categoria: ${newProduct.category}</p>
+                `;
+                siteProductsContainer.appendChild(productDiv);
 
                 // Limpa os campos de entrada
                 document.getElementById("productName").value = "";
@@ -266,60 +272,20 @@
             }
         }
 
-        // Função para exibir os produtos no site
-        function displayProducts() {
-            const productList = JSON.parse(localStorage.getItem("productList")) || [];
-            const productListDiv = document.getElementById("productList");
-
-            productListDiv.innerHTML = ""; // Limpa a exibição dos produtos
-
-            productList.forEach((product, index) => {
-                const productDiv = document.createElement("div");
-                productDiv.classList.add("product-item");
-                productDiv.innerHTML = `
-                    <span>${product.name}</span>
-                    <span>R$ ${product.price}</span>
-                    <span><button onclick="deleteProduct(${index})">Excluir</button></span>
-                `;
-                productListDiv.appendChild(productDiv);
-            });
-        }
-
-        // Função para excluir um produto
-        function deleteProduct(index) {
-            const productList = JSON.parse(localStorage.getItem("productList")) || [];
-            productList.splice(index, 1); // Remove o produto da lista
-
-            // Salva a lista atualizada no localStorage
-            localStorage.setItem("productList", JSON.stringify(productList));
-
-            // Exibe a lista atualizada de produtos
-            displayProducts();
-        }
-
         // Função para filtrar produtos por categoria
         function filterProducts(category) {
-            const productList = JSON.parse(localStorage.getItem("productList")) || [];
             const siteProductsContainer = document.getElementById("siteProducts");
+            const siteProducts = document.querySelectorAll(".site-product");
 
-            siteProductsContainer.innerHTML = ""; // Limpa a exibição dos produtos no site
-
-            productList.filter(product => product.category === category)
-                .forEach((product, index) => {
-                    const productDiv = document.createElement("div");
-                    productDiv.classList.add("site-product");
-                    productDiv.innerHTML = `
-                        <h4>${product.name}</h4>
-                        <p>Preço: R$ ${product.price}</p>
-                        ${product.image ? `<img src="${product.image}" alt="${product.name}" />` : ""}
-                        <p>Categoria: ${product.category}</p>
-                    `;
-                    siteProductsContainer.appendChild(productDiv);
-                });
+            siteProducts.forEach(product => {
+                const productCategory = product.querySelector("p:last-child").innerText.replace('Categoria: ', '');
+                if (category === "Todos" || productCategory === category) {
+                    product.style.display = "block";
+                } else {
+                    product.style.display = "none";
+                }
+            });
         }
-
-        // Exibir os produtos ao carregar a página
-        window.onload = displayProducts;
     </script>
 
 </body>
